@@ -31,10 +31,6 @@ jobs:
           echo "Checking Docker login status..."
           docker info || echo "Docker is not logged in or there was an error."
 
-       - name: Configure Docker to use Google Artifact Registry
-        run: |
-          gcloud auth configure-docker europe-docker.pkg.dev
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
