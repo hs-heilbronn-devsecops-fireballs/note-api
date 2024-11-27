@@ -31,7 +31,7 @@ jobs:
           echo "Checking Docker login status..."
           docker info || echo "Docker is not logged in or there was an error."
 
-        - name: Authenticate to Google Cloud using Workload Identity Federation
+      - name: Authenticate to Google Cloud using Workload Identity Federation
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
