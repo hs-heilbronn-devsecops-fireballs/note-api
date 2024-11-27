@@ -42,7 +42,7 @@ jobs:
           gcloud config set project 707561499774
           gcloud config set run/region europe-west3
 
-       - name: Configure Docker to use Google Artifact Registry
+      - name: Configure Docker to use Google Artifact Registry
         run: |
           gcloud auth configure-docker europe-docker.pkg.dev
 
@@ -53,7 +53,7 @@ jobs:
           push: true
           tags: europe-docker.pkg.dev/<your-project-id>/<repository>/note-api:latest
 
-       - name: Deploy to Cloud Run
+      - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: note-api-hs-heilbronn-fireballs
