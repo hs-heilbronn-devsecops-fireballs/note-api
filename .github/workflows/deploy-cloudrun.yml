@@ -34,5 +34,5 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: note-api-hs-heilbronn-fireballs
-          image: ghcr.io/elenagaz/note-api:${{ env.tag }}
+          image: docker.io//elenagaz/note-api:${{ env.tag }}
           env_vars: BACKEND=memory
