@@ -31,9 +31,31 @@ jobs:
           echo "Checking Docker login status..."
           docker info || echo "Docker is not logged in or there was an error."
 
+        - name: Authenticate to Google Cloud using Workload Identity Federation
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
+          service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
+
+      - name: Set Google Cloud Project and Region
+        run: |
+          gcloud config set project 707561499774
+          gcloud config set run/region europe-west3
+
+       - name: Configure Docker to use Google Artifact Registry
+        run: |
+          gcloud auth configure-docker europe-docker.pkg.dev
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: elenagaz/note-api:latest  
+          tags: europe-docker.pkg.dev/<your-project-id>/<repository>/note-api:latest
+
+       - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: note-api-hs-heilbronn-fireballs
+          image: ghcr.io/elenagaz/note-api:${{ env.tag }}
+          env_vars: BACKEND=memory
