@@ -36,3 +36,4 @@ jobs:
           service: note-api-hs-heilbronn-fireballs
           image: docker.io/elenagaz/note-api:${{ env.tag }}
           env_vars: BACKEND=memory
+          region: europe-west3
