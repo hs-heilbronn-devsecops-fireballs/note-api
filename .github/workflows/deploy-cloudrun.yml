@@ -37,3 +37,4 @@ jobs:
           image: docker.io/elenagaz/note-api:${{ env.tag }}
           env_vars: BACKEND=memory
           region: europe-west3
+          flags: --allow-unauthenticated
