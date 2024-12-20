@@ -9,10 +9,26 @@ from starlette.responses import RedirectResponse
 from .backends import Backend, RedisBackend, MemoryBackend, GCSBackend
 from .model import Note, CreateNoteRequest
 
+# NEW! for opentelemetry
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+# Initialize OpenTelemetry
+trace.set_tracer_provider(TracerProvider())
+tracer_provider = trace.get_tracer_provider()
+exporter = CloudTraceSpanExporter()
+span_processor = BatchSpanProcessor(exporter)
+tracer_provider.add_span_processor(span_processor)
+
 app = FastAPI()
 
 my_backend: Optional[Backend] = None
 
+# Instrument FastAPI with OpenTelemetry
+FastAPIInstrumentor.instrument_app(app)
 
 def get_backend() -> Backend:
     global my_backend  # pylint: disable=global-statement

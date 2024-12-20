@@ -36,5 +36,7 @@ jobs:
           service: note-api-hs-heilbronn-fireballs
           image: docker.io/elenagaz/note-api:${{ env.tag }}
           env_vars: BACKEND=memory
+            OTEL_EXPORTER_OTLP_ENDPOINT=https://otel.googleapis.com
+            GOOGLE_CLOUD_PROJECT=707561499774
           region: europe-west3
           flags: --allow-unauthenticated
