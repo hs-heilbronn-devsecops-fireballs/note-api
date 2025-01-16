@@ -67,3 +67,4 @@ def create_note(request: CreateNoteRequest, backend: Annotated[Backend, Depends(
     note_id = str(uuid4())
     backend.set(note_id, request)
     return note_id
+
