@@ -24,7 +24,6 @@ cloud_exporter = CloudTraceSpanExporter()
 span_processor = BatchExportSpanProcessor(cloud_exporter)
 tracer_provider.add_span_processor(span_processor)
 
-
 # Create the FastAPI app
 app = FastAPI()
 
@@ -62,7 +61,7 @@ def get_note(note_id: str, backend: Annotated[Backend, Depends(get_backend)]) ->
 @app.put('/notes/{note_id}')
 def update_note(note_id: str, request: CreateNoteRequest, backend: Annotated[Backend, Depends(get_backend)]) -> None:
     backend.set(note_id, request)
-        
+
 @app.post('/notes')
 def create_note(request: CreateNoteRequest, backend: Annotated[Backend, Depends(get_backend)]) -> str:
     note_id = str(uuid4())
