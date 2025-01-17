@@ -12,6 +12,8 @@ from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from .backends import Backend, RedisBackend, MemoryBackend, GCSBackend
 from .model import Note, CreateNoteRequest
+import uvicorn  
+
 
 # Initialize OpenTelemetry Tracer provider and exporter
 trace.set_tracer_provider(
@@ -68,3 +70,6 @@ def create_note(request: CreateNoteRequest, backend: Annotated[Backend, Depends(
     backend.set(note_id, request)
     return note_id
 
+# checking of this is better
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8080)  
