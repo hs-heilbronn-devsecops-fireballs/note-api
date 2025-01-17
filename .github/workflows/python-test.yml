@@ -29,7 +29,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install coverage
-          pip install opentelemetry-api opentelemetry-sdk opentelemetry-instrumentation-fastapi opentelemetry-exporter-google-cloud
+
           
       - run: echo "Running tests with parallel execution and measuring coverage..."
       - name: Run tests with pytest and coverage
