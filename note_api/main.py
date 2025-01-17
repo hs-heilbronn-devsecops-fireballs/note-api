@@ -13,6 +13,7 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from .backends import Backend, RedisBackend, MemoryBackend, GCSBackend
 from .model import Note, CreateNoteRequest
 
+
 # Initialize OpenTelemetry Tracer provider and exporter
 trace.set_tracer_provider(
     TracerProvider(
