@@ -7,8 +7,8 @@ from starlette.responses import RedirectResponse
 from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchExportSpanProcessor
-from opentelemetry.exporter.google.cloud_trace import CloudTraceSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
 from opentelemetry.sdk.resources import Resource
 from .backends import Backend, RedisBackend, MemoryBackend, GCSBackend
 from .model import Note, CreateNoteRequest
@@ -21,7 +21,7 @@ trace.set_tracer_provider(
 )
 tracer_provider = trace.get_tracer_provider()
 cloud_exporter = CloudTraceSpanExporter()
-span_processor = BatchExportSpanProcessor(cloud_exporter)
+span_processor = BatchSpanProcessor(cloud_exporter)
 tracer_provider.add_span_processor(span_processor)
 
 # Create the FastAPI app
