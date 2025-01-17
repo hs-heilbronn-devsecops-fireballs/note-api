@@ -24,6 +24,9 @@ cloud_exporter = CloudTraceSpanExporter()
 span_processor = BatchExportSpanProcessor(cloud_exporter)
 tracer_provider.add_span_processor(span_processor)
 
+# Get a tracer
+tracer = tracer_provider.get_tracer(__name__)
+
 # Create the FastAPI app
 app = FastAPI()
 
@@ -36,12 +39,16 @@ def get_backend() -> Backend:
     global my_backend
     if my_backend is None:
         backend_type = os.getenv('BACKEND', 'memory')
-        if backend_type == 'redis':
-            my_backend = RedisBackend()
-        elif backend_type == 'gcs':
-            my_backend = GCSBackend()
-        else:
-            my_backend = MemoryBackend()
+        with tracer.start_as_current_span("initialize-backend") as span:
+            if backend_type == 'redis':
+                span.set_attribute("backend.type", "redis")
+                my_backend = RedisBackend()
+            elif backend_type == 'gcs':
+                span.set_attribute("backend.type", "gcs")
+                my_backend = GCSBackend()
+            else:
+                span.set_attribute("backend.type", "memory")
+                my_backend = MemoryBackend()
     return my_backend
 
 @app.get('/')
