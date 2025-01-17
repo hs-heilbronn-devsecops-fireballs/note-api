@@ -50,20 +50,38 @@ def redirect_to_notes() -> None:
 
 @app.get('/notes')
 def get_notes(backend: Annotated[Backend, Depends(get_backend)]) -> List[Note]:
-    keys = backend.keys()
-    Notes = [backend.get(key) for key in keys]
-    return Notes
+    tracer = trace.get_tracer(__name__)
+    with tracer.start_as_current_span("get_notes_span"):
+        # Custom span for fetching keys
+        with tracer.start_as_current_span("fetch_keys_span"):
+            keys = backend.keys()
+        
+        # Custom span for retrieving notes from the backend
+        with tracer.start_as_current_span("fetch_notes_span"):
+            notes = [backend.get(key) for key in keys]
+        
+        return notes
 
 @app.get('/notes/{note_id}')
 def get_note(note_id: str, backend: Annotated[Backend, Depends(get_backend)]) -> Note:
-    return backend.get(note_id)
+    tracer = trace.get_tracer(__name__)
+    with tracer.start_as_current_span("get_note_span"):
+        # Custom span for fetching a specific note
+        note = backend.get(note_id)
+        return note
 
 @app.put('/notes/{note_id}')
 def update_note(note_id: str, request: CreateNoteRequest, backend: Annotated[Backend, Depends(get_backend)]) -> None:
-    backend.set(note_id, request)
+    tracer = trace.get_tracer(__name__)
+    with tracer.start_as_current_span("update_note_span"):
+        # Custom span for updating a note
+        backend.set(note_id, request)
 
 @app.post('/notes')
 def create_note(request: CreateNoteRequest, backend: Annotated[Backend, Depends(get_backend)]) -> str:
-    note_id = str(uuid4())
-    backend.set(note_id, request)
-    return note_id
+    tracer = trace.get_tracer(__name__)
+    with tracer.start_as_current_span("create_note_span"):
+        # Custom span for creating a note
+        note_id = str(uuid4())
+        backend.set(note_id, request)
+        return note_id
