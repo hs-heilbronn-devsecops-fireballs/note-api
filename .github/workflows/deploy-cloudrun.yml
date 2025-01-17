@@ -38,4 +38,9 @@ jobs:
           env_vars: BACKEND=memory
           region: europe-west3
           flags: --allow-unauthenticated
+
+      - name: Fetch Cloud Run Logs
+        run: |
+          echo "Fetching Cloud Run logs for service note-api-hs-heilbronn-fireballs..."
+          gcloud run services logs read note-api-hs-heilbronn-fireballs --region europe-west3 --limit=50
           
