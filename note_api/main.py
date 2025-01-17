@@ -27,9 +27,13 @@ tracer_provider.add_span_processor(span_processor)
 # Create the FastAPI app
 app = FastAPI()
 
-# Instrument FastAPI app
+# Instrument FastAPI app for automatic tracing
 FastAPIInstrumentor.instrument_app(app)
 
+# Initialize the tracer
+tracer = trace.get_tracer(__name__)
+
+# Backend initialization
 my_backend: Optional[Backend] = None
 
 def get_backend() -> Backend:
@@ -44,44 +48,44 @@ def get_backend() -> Backend:
             my_backend = MemoryBackend()
     return my_backend
 
+# Route for redirecting to /notes
 @app.get('/')
 def redirect_to_notes() -> None:
     return RedirectResponse(url='/notes')
 
+# Route for fetching all notes
 @app.get('/notes')
 def get_notes(backend: Annotated[Backend, Depends(get_backend)]) -> List[Note]:
-    tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("get_notes_span"):
-        # Custom span for fetching keys
+        # Span for fetching all keys and notes
         with tracer.start_as_current_span("fetch_keys_span"):
             keys = backend.keys()
         
-        # Custom span for retrieving notes from the backend
         with tracer.start_as_current_span("fetch_notes_span"):
             notes = [backend.get(key) for key in keys]
         
         return notes
 
+# Route for fetching a specific note
 @app.get('/notes/{note_id}')
 def get_note(note_id: str, backend: Annotated[Backend, Depends(get_backend)]) -> Note:
-    tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("get_note_span"):
-        # Custom span for fetching a specific note
+        # Span for fetching a specific note by ID
         note = backend.get(note_id)
         return note
 
+# Route for updating a note
 @app.put('/notes/{note_id}')
 def update_note(note_id: str, request: CreateNoteRequest, backend: Annotated[Backend, Depends(get_backend)]) -> None:
-    tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("update_note_span"):
-        # Custom span for updating a note
+        # Span for updating a note by ID
         backend.set(note_id, request)
 
+# Route for creating a new note
 @app.post('/notes')
 def create_note(request: CreateNoteRequest, backend: Annotated[Backend, Depends(get_backend)]) -> str:
-    tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("create_note_span"):
-        # Custom span for creating a note
+        # Span for creating a new note
         note_id = str(uuid4())
         backend.set(note_id, request)
         return note_id
